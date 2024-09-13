@@ -17,15 +17,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { passwordMatchSchema } from "@/validation/passwordMatchSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { registerUser } from "./actions";
 
-const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-  confirmPassword: z.string().min(8),
-});
+const formSchema = z
+  .object({
+    email: z.string().email(),
+  })
+  .and(passwordMatchSchema);
 
 function RegisterPage() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -37,7 +39,15 @@ function RegisterPage() {
     },
   });
 
-  const handleSubmit = async (data: z.infer<typeof formSchema>) => {};
+  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+    const response = await registerUser({
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+    });
+
+    console.log(response);
+  };
 
   return (
     <main className="flex justify-center items-center min-h-screen">
@@ -48,7 +58,10 @@ function RegisterPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)}>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="flex flex-col gap-2"
+            >
               <FormField
                 control={form.control}
                 name="email"
