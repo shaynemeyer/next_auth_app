@@ -2,7 +2,7 @@
 
 import { passwordMatchSchema } from "@/validation/passwordMatchSchema";
 import { z } from "zod";
-import { hash } from "bcryptjs";
+import { hash } from "bcrypt";
 import { db } from "@/db/drizzle";
 import { users } from "@/db/usersSchema";
 
