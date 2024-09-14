@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -21,6 +22,9 @@ import { passwordSchema } from "@/validation/passwordSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { loginWithCredentials } from "./actions";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -28,6 +32,7 @@ const formSchema = z.object({
 });
 
 function LoginPage() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,7 +42,20 @@ function LoginPage() {
   });
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log("Submit", data);
+    const response = await loginWithCredentials({
+      email: data.email,
+      password: data.password,
+    });
+
+    console.log(response);
+
+    if (response?.error) {
+      form.setError("root", {
+        message: response.message,
+      });
+    } else {
+      router.push("/my-account");
+    }
   };
 
   return (
@@ -84,11 +102,25 @@ function LoginPage() {
                     );
                   }}
                 />
+                {!!form.formState.errors.root?.message && (
+                  <FormMessage>
+                    {form.formState.errors.root?.message}
+                  </FormMessage>
+                )}
                 <Button className="mt-3">Login</Button>
               </fieldset>
             </form>
           </Form>
         </CardContent>
+        <CardFooter className="flex flex-col gap-2">
+          <div className="text-muted-foreground text-sm">
+            Don't have an account? <Link href="/register">Register</Link>
+          </div>
+          <div className="text-muted-foreground text-sm">
+            Forgot Password?{" "}
+            <Link href="/forgot-password">Reset my password.</Link>
+          </div>
+        </CardFooter>
       </Card>
     </main>
   );

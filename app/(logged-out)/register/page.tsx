@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -132,6 +133,11 @@ function RegisterPage() {
               </form>
             </Form>
           </CardContent>
+          <CardFooter className="flex flex-col gap-2">
+            <div className="text-muted-foreground text-sm">
+              Already have an account? <Link href="/login">Login</Link>
+            </div>
+          </CardFooter>
         </Card>
       )}
     </main>

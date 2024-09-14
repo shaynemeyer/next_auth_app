@@ -35,6 +35,6 @@ export const loginWithCredentials = async ({
       redirect: false,
     });
   } catch (err) {
-    console.log(err);
+    return { error: true, message: "Invalid credentials" };
   }
 };
