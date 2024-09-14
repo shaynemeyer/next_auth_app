@@ -16,6 +16,8 @@ import {
 } from "../ui/form";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { changePassword } from "./actions";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z
   .object({
@@ -24,7 +26,7 @@ const formSchema = z
   .and(passwordMatchSchema);
 
 function ChangePasswordForm() {
-  //   const { toast } = useToast();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,7 +37,24 @@ function ChangePasswordForm() {
   });
 
   const handleSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+    const response = await changePassword({
+      currentPassword: data.currentPassword,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+    });
+
+    if (response?.error) {
+      form.setError("root", {
+        message: response.message,
+      });
+    } else {
+      toast({
+        title: "Password changed",
+        description: "Your password has been updated.",
+        className: "bg-green-500 text-white",
+      });
+      form.reset();
+    }
   };
 
   return (
