@@ -1,6 +1,15 @@
 # Next Auth App
 
 
+---
+## Using Drizzle ORM
+
+### Pushing updates to the database
+
+```sh
+npx drizzle-kit push
+```
+
 --- 
 ## Resources
 
