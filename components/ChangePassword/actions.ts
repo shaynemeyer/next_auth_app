@@ -58,7 +58,7 @@ export const changePassword = async ({
       message: "User not found",
     };
   }
-
+  console.log(currentPassword);
   const passwordMatch = await compare(currentPassword, user.password!);
 
   if (!passwordMatch) {

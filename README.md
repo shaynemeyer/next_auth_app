@@ -82,3 +82,5 @@ npm run dev
   - [Generating Auth Secrets](https://stackoverflow.com/questions/75000633/where-to-generate-next-auth-secret-for-next-auth)
 - [TailwindCSS for NextJS](https://tailwindcss.com/docs/guides/nextjs) - CSS Styling.
 - [Shadcn/ui](https://ui.shadcn.com/docs) - UI Components
+- [`otplib`](https://www.npmjs.com/package/otplib) - Generating single use passwords.
+- [`qrcode.react`](https://www.npmjs.com/package/qrcode.react)
