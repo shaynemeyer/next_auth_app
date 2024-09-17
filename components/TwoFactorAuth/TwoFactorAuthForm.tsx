@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { get2faSecret } from "./actions";
+import { activate2fa, disable2fa, get2faSecret } from "./actions";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
 import {
@@ -20,6 +20,8 @@ function TwoFactorAuthForm({
   const [isActivated, setIsActivated] = useState(twoFactorActivated);
   const [step, setStep] = useState(1);
   const [code, setCode] = useState("");
+  const [otp, setOtp] = useState("");
+
   const { toast } = useToast();
 
   const handleEnableClick = async () => {
@@ -40,10 +42,40 @@ function TwoFactorAuthForm({
 
   const handleOTPSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const response = await activate2fa(otp);
+
+    if (response?.error) {
+      toast({
+        variant: "destructive",
+        title: response.message,
+      });
+      return;
+    }
+
+    toast({
+      className: "bg-green-500 text-white",
+      title: "Two-Factor Authentication has been enabled",
+    });
+
+    setIsActivated(true);
+  };
+
+  const handleDisable2faClick = async () => {
+    await disable2fa();
+    toast({
+      className: "bg-green-500 text-white",
+      title: "Two-Factor Authentication has been disabled",
+    });
   };
 
   return (
     <div>
+      {!!isActivated && (
+        <Button variant="destructive" onClick={handleDisable2faClick}>
+          Disable Two-Factor Authentication
+        </Button>
+      )}
       {!isActivated && (
         <div>
           {step === 1 && (
@@ -76,7 +108,7 @@ function TwoFactorAuthForm({
                 Please enter the one-time passcode from the Google Authenticator
                 app.
               </p>
-              <InputOTP maxLength={6}>
+              <InputOTP maxLength={6} value={otp} onChange={setOtp}>
                 <InputOTPGroup>
                   <InputOTPSlot index={0} />
                   <InputOTPSlot index={1} />
@@ -89,7 +121,11 @@ function TwoFactorAuthForm({
                   <InputOTPSlot index={5} />
                 </InputOTPGroup>
               </InputOTP>
-              <Button type="submit" className="w-full my-2">
+              <Button
+                type="submit"
+                className="w-full my-2"
+                disabled={otp.length !== 6}
+              >
                 Submit and activate
               </Button>
               <Button
