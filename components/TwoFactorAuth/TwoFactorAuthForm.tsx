@@ -1,10 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { get2faSecret } from "./actions";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "../ui/input-otp";
 
 function TwoFactorAuthForm({
   twoFactorActivated,
@@ -31,6 +37,11 @@ function TwoFactorAuthForm({
     setStep(2);
     setCode(response.twoFactorSecret ?? "");
   };
+
+  const handleOTPSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
+
   return (
     <div>
       {!isActivated && (
@@ -58,6 +69,37 @@ function TwoFactorAuthForm({
                 Cancel
               </Button>
             </div>
+          )}
+          {step === 3 && (
+            <form className="flex flex-col gap-2" onSubmit={handleOTPSubmit}>
+              <p className="text-xs text-muted-foreground">
+                Please enter the one-time passcode from the Google Authenticator
+                app.
+              </p>
+              <InputOTP maxLength={6}>
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                </InputOTPGroup>
+                <InputOTPSeparator />
+                <InputOTPGroup>
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
+              <Button type="submit" className="w-full my-2">
+                Submit and activate
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setStep(2)}
+                className="w-full my-2"
+              >
+                Cancel
+              </Button>
+            </form>
           )}
         </div>
       )}
