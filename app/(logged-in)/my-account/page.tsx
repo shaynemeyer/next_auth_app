@@ -24,7 +24,7 @@ async function MyAccountPage() {
         <Label>Email Address</Label>
         <div className="text-muted-foreground">{session?.user?.email}</div>
         <TwoFactorAuthForm
-          twofactorActivated={user.twoFactorActivated ?? false}
+          twoFactorActivated={user.twoFactorActivated ?? false}
         />
       </CardContent>
     </Card>

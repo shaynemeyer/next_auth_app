@@ -5,6 +5,7 @@ import { users } from "./db/usersSchema";
 import { eq } from "drizzle-orm";
 import { authConfig } from "./auth.config";
 import { compare } from "bcrypt";
+import { authenticator } from "otplib";
 
 async function getUser(email: string) {
   try {
@@ -35,6 +36,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: {},
         password: {},
+        token: {},
       },
       async authorize(credentials) {
         const user = await getUser(credentials.email as string);
@@ -46,10 +48,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             credentials.password as string,
             user.password!
           );
+
           if (!passwordCorrect) {
             throw new Error("Invalid credentials");
           }
+
+          if (user.twoFactorActivated) {
+            const tokenValid = authenticator.check(
+              credentials.token as string,
+              user.twoFactorSecret ?? ""
+            );
+
+            if (!tokenValid) {
+              throw new Error("Invalid Passcode");
+            }
+          }
         }
+
         return {
           id: user.id.toString(),
           email: user.email,
